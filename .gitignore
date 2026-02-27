@@ -9,3 +9,9 @@ dist/
 build/
 *.skill
 .env
+.qwen
+.kiro
+.claude
+.agents
+.agent
+logs

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "anthropic-validator": {
+      "source": "ashaykubal/essential-agents-skills",
+      "sourceType": "github",
+      "computedHash": "bd1ce656bb6317957ce0be8e99a9e25abd5aa1107ce05b9d297dc0b2f2ce4546"
+    }
+  }
+}

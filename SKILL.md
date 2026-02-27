@@ -47,7 +47,7 @@ You MUST output the findings in the following JSON schema:
 ```
 
 ## 1. Pre-Writing Hook (The Guardrail)
-**CRITICAL:** This hook is triggered AUTOMATICALLY before writing or refactoring any code. Follow the expert reasoning protocol in `agents/pre_writing_hook.md` to perform "mental linting" and context alignment.
+**CRITICAL:** This hook is triggered AUTOMATICALLY before writing or refactoring any code. Follow the expert reasoning protocol in `references/agents/pre_writing_hook.md` to perform "mental linting" and context alignment.
 
 ---
 
@@ -72,10 +72,21 @@ The agent must proactively adapt its output to the latest stable patterns of the
 ## 4. Workflow Execution
 
 ### Step 1: Scanner Agent (The Auditor)
-Follow instructions in `agents/scanner.md`. Use `grep_search` and `read_file` to survey the project and identify hotspots based on the heuristics.
+Follow instructions in `references/agents/scanner.md`. Use `grep_search` and `read_file` to survey the project and identify hotspots based on the heuristics.
 
 ### Step 2: Architect Agent (The Mapper)
-Follow instructions in `agents/architect.md`. Analyze the vulnerabilities and create a structured refactoring plan, especially for complex or monolithic files.
+Follow instructions in `references/agents/architect.md`. Analyze the vulnerabilities and create a structured refactoring plan, especially for complex or monolithic files.
 
 ### Step 3: Cleaner Agent (The Surgeon)
-Follow instructions in `agents/cleaner.md`. Apply changes using `replace` or `write_file`. Verify the fix by re-evaluating the complexity.
+Follow instructions in `references/agents/cleaner.md`. Apply changes using `replace` or `write_file`. Verify the fix by re-evaluating the complexity.
+
+---
+
+## Related Skills
+- **component-refactoring**: Essential for splitting complex components identified by the scanner.
+- **react-component-architecture**: To ensure new code follows scalable and maintainable patterns.
+- **code-review-excellence**: For establishing high standards that prevent "vibe coding" from being merged.
+- **react-doctor**: Use after refactoring React components to ensure no regressions.
+- **vercel-react-best-practices**: For deep-dives into Next.js and React performance patterns.
+- **clean-ddd-hexagonal**: Complementary for high-level architectural debt prevention.
+- **anthropic-validator**: To validate and maintain the integrity of this and other skills.
