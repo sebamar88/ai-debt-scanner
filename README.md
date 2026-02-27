@@ -37,6 +37,7 @@ You can invoke this skill by asking the agent to:
 The agent will output a standardized report and suggest a plan for improvement.
 
 ### Users can install it via:
-    ```bash
+
+    
     npx skills add sebamar88/ai-debt-scanner
-    ```
+    
