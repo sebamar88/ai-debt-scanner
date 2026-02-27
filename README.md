@@ -24,7 +24,7 @@ The framework implements a **Multi-Agent Reasoning Protocol**:
 ├── SKILL.md                 # Skill definition and reasoning protocol
 ├── agents/                  # Specialized reasoning agents (Markdown instructions)
 ├── references/              # Rules, protocols, and refactoring patterns
-└── tests/                   # Sample code with debt for validation
+└── samples/                 # Code fixtures with debt for audit practice
 ```
 
 ## Usage
