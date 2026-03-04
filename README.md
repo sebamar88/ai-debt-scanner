@@ -6,7 +6,7 @@ This is a universal reasoning framework designed for AI agents (like Gemini, Cla
 
 - 🌍 **OS & Runtime Agnostic:** Works natively on Windows, macOS, and Linux without requiring Python, Node.js, or any external binaries.
 - 🛡️ **Enterprise Guardrails:** Proactively detects **Security Smells**, **Documentation Gaps**, and **Dependency Overkill**.
-- 🔍 **Anti-Hallucination Protocol:** Mandatory grounding using **Context7** (`resolve-library-id`, `query-docs`) or **Google Search** for unknown or modern frameworks (e.g., React 19, Next.js 15), preventing "vibe coding" hallucinations.
+- 🔍 **Anti-Hallucination Protocol:** Mandatory grounding using reliable sources (e.g., **Google Search**, specialized MCPs like **Context7**, or official docs) for unknown or modern frameworks, preventing "vibe coding" hallucinations.
 - 🧪 **Test-Driven Refactoring:** Mandatory verification before and after any code modification. No refactor is applied without baseline and verification tests.
 - 🌫️ **Context-Aware Scanning:** Automatically reduces noise in test files (ignores Magic Numbers in `**/tests/**` or `*.spec.*`) and relaxes rules for configuration and orchestration files.
 - ⚡ **Incremental Audits:** Supports `--diff` mode to scan only modified files, making it ideal for pre-commit hooks.
