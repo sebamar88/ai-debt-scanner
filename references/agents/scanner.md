@@ -16,8 +16,9 @@ Analyze the codebase to identify technical debt hotspots, specifically targeting
 4.  **Rank Hotspots**: Sort files by their total score.
 5.  **Context Check**: Before reporting a vulnerability, verify if the file path matches an override pattern in `rules.md`.
 
-## Output Requirement
-You must produce a report in the following JSON format:
+## Output Requirement: TOON (Token-Oriented Object Notation)
+You must produce a report in the **TOON** JSON format. This line-specific protocol is essential for the "Architect" and "Cleaner" agents to perform surgical refactorings without context saturation.
+
 ```json
 {
   "summary": {
@@ -29,7 +30,7 @@ You must produce a report in the following JSON format:
   "vulnerabilities": [
     {
       "file": "path",
-      "line": 0,
+      "line": 123,
       "rule_id": "AI_ARTIFACT|EMPTY_CATCH|...",
       "severity": "CRITICAL|WARNING|INFO",
       "description": "..."

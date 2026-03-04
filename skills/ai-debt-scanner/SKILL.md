@@ -28,8 +28,9 @@ When asked to "scan", "audit", or "check for debt", you can use the following sp
 2.  **Structural Bloat**: Files > 300 lines or functions > 50 lines.
 3.  **Lazy Patterns**: Generic exceptions, leftover logs/prints, magic numbers (context-dependent).
 
-### Output Schema (The TOON Protocol)
-You MUST output the findings in the following JSON format to ensure agents like "Architect" and "Cleaner" can act surgically:
+### Output Protocol: TOON (Token-Oriented Object Notation)
+You MUST output the findings in **TOON** format. This structured, line-specific JSON allows the "Architect" and "Cleaner" agents to identify and fix issues with surgical precision without re-reading the entire file.
+
 ```json
 {
   "summary": {
