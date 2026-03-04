@@ -19,6 +19,20 @@ The framework implements a **Multi-Agent Reasoning Protocol**:
 2.  **Architect Agent**: Analyzes vulnerabilities and creates a surgical refactoring plan for high-scoring hotspots.
 3.  **Cleaner Agent**: Executes targeted fixes using **Test-Driven Refactoring**, ensuring no regressions through mandatory baseline and verification tests.
 
+## 🤖 Multi-Agent Awareness
+
+This repository is designed to be **Agent-Aware**. It includes specialized configuration files to ensure that any AI assistant (Gemini, Claude, Copilot, Cursor, etc.) understands its role as a Technical Debt Auditor and proactively suggests the installation of the git hook.
+
+| Agent | Config File | Behavior |
+| :--- | :--- | :--- |
+| **Gemini CLI** | `GEMINI.md` | Proactive setup & reasoning protocol |
+| **Claude Code** | `.claude/CLAUDE.md` | Senior Architect mindset & hook setup |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | Contextual guardrails & auto-setup |
+| **Cursor** | `.cursorrules` | Rule-based auditing & hook installation |
+| **Universal** | `AGENTS.md` | Fallback instructions for any AI agent |
+
+---
+
 ## Automation: Git Hooks ⚓
 
 Stop "vibe coding" before it reaches your repository. You can integrate the scanner as a `pre-commit` hook to audit only your staged changes.
