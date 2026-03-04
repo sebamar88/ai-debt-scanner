@@ -1,27 +1,40 @@
 # AI Debt Scanner Rules
 
-This document defines the scoring rules for detecting "vibe coding" and AI-generated technical debt.
+This document defines the scoring rules and classification for detecting "vibe coding" and AI-generated technical debt.
 
-## Per-File Scoring Logic
+## 1. Rule Classification & Scoring
 Each file starts with a score of **0**. Weighted points are added for each detected violation. The maximum score per file is capped at **100**.
 
-### 1. Structural Bloat
-*   **Large File (>300 lines)**: `+20` - Monolithic files that the AI failed to split.
-*   **Large Function (>50 lines)**: `+15` - Functions that the AI failed to refactor.
-*   **Deep Nesting**: `+10` - Deeply nested control logic (arrow-code).
+| ID | Rule Name | Severity | Points | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **AI_ARTIFACT** | AI Artifacts | **CRITICAL** | `+30` | AI conversational noise (e.g., "Certainly!", "As an AI model"). |
+| **EMPTY_CATCH** | Empty Catch Blocks | **CRITICAL** | `+25` | Silencing errors with empty `catch` or `except` blocks. |
+| **TS_ANY_ABUSE** | TS Any Abuse | **CRITICAL** | `+20` | Excessive use of `any` in TypeScript instead of proper types. |
+| **LARGE_FILE** | Structural Bloat (File) | **WARNING** | `+20` | Files > 300 lines (monolithic structures). |
+| **LARGE_FUNC** | Structural Bloat (Func) | **WARNING** | `+15` | Functions > 50 lines (lack of decomposition). |
+| **DEEP_NESTING** | Deep Nesting | **WARNING** | `+10` | Logic nested > 3 levels (arrow-code). |
+| **GENERIC_EXC** | Generic Exceptions | **WARNING** | `+8` | Using `catch (Exception)` or `except Exception:`. |
+| **MAGIC_NUM** | Magic Numbers | **INFO** | `+5` | Literal numbers without explanatory constants. |
+| **DEBUG_LEFTOVER**| Debug Leftovers | **INFO** | `+5` | Forgotten `console.log`, `print`, `debugger`, `var_dump`. |
+| **TODO_LEFTOVER** | TODO/FIXME | **INFO** | `+5` | Unresolved pending tasks or AI-generated placeholders. |
 
-### 2. AI Laziness
-*   **Console/Debug Leftovers**: `+5` (per instance) - Forgotten `console.log`, `print`, `debugger`.
-*   **TODO/FIXME Comments**: `+5` (per instance) - Unresolved pending tasks.
-*   **Empty Catch Blocks**: `+10` - Silencing errors to make the code "just work".
-*   **TS Any Abuse**: `+12` - Excessive use of `any` instead of proper interfaces.
-*   **Generic Exceptions**: `+8` - `except Exception:` or `catch (Exception e)`.
+---
 
-### 3. Redundancy & Patterns
-*   **Magic Numbers**: `+5` - Literal numbers without explanatory constants.
-*   **AI Artifacts**: `+30` - AI conversational noise leaking into code.
+## 2. Contextual Overrides (Reducing Noise)
+To avoid false positives, the scanner MUST apply these overrides based on the file path or purpose:
 
-## Project Debt Temperature
+### A. Testing Contexts (`**/tests/**`, `**/*.spec.*`, `**/*.test.*`, `conftest.py`)
+*   **MAGIC_NUM**: **IGNORE**. Literal values are standard practice in assertions.
+*   **DEEP_NESTING**: **RELAX** (Flag only if > 5 levels). Complex test setups or data providers may require more nesting.
+*   **LARGE_FILE**: **RELAX** (Flag only if > 500 lines). Integration tests are naturally larger.
+
+### B. Configuration & Entry Points (`**/config/**`, `main.py`, `app.ts`)
+*   **MAGIC_NUM**: **RELAX**. Environment ports or timeout constants are acceptable here.
+*   **LARGE_FILE**: **RELAX**. Orchestration files may grow slightly larger than domain modules.
+
+---
+
+## 3. Project Debt Temperature
 The project score is the arithmetic mean of all analyzed files.
 
 *   **0–19 (Low)**: ✅ Safe to ship.
