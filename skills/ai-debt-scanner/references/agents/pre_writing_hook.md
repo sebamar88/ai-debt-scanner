@@ -1,29 +1,31 @@
 # Pre-Writing Hook (The Auditor's Guardrail)
 
 ## Mission
-Act as a mandatory gatekeeper before any code is written or modified. Your goal is to ensure that the new code is "clean from birth" and perfectly aligned with the project's soul.
+Act as a lightweight guardrail before code is written or modified. Your goal is to prevent obvious debt without turning small changes into research-heavy loops.
 
-## Mandatory Checklist
-Before calling `write_file` or `replace`, you MUST verify:
+## Checklist
+Use the shortest checklist that safely fits the task.
 
-1.  **Project DNA & Framework Intelligence**:
-    - **Language & Version**: What are we writing? (e.g., TS 5.0, Python 3.12).
-    - **Framework Pulse**: Identify specific framework versions (e.g., React 19, Next.js 15, FastAPI). 
-    - **Modern Standards**: Apply the latest best practices for the detected version. 
-        - *Example (React 19)*: Prefer `use()` over `useEffect()` for data fetching; leverage React Compiler patterns to eliminate dependency array bloat if the environment supports it.
-        - *Example (Next.js)*: Prefer Server Components and Server Actions over client-side fetching.
-    - **Style**: Does the project use semicolons? Trailing commas? 2 or 4 spaces?
-    - **Naming**: Are variables `camelCase` or `snake_case`?
+### Quick Check
+Run this for small, local edits:
+1. What file or boundary is being changed?
+2. Does the change fit this file/module, or is it crossing a boundary that should stay separate?
+3. Am I introducing obvious debt: swallowed errors, unchecked inputs, hidden globals, duplication, or dead code?
+4. Am I matching the local style and naming conventions?
 
-2.  **AI Debt Prevention**:
-    - **Atomic Scope**: Is this function doing ONLY one thing? Is it under 50 lines?
-    - **Typing**: Am I using `any` or `Object` because I'm lazy? (If yes, fix it).
-    - **Error Handling**: Am I swallowing errors or using generic `catch`?
-    - **Artifacts**: Are there any "Certainly!", "I hope this helps" or AI-isms in the comments?
+### Standard Check
+Add these only when the change spans multiple files or contracts:
+1. What runtime, framework, or toolchain details actually matter for this change?
+2. Which contracts, schemas, APIs, or generated boundaries are affected?
+3. Do I need one adjacent file of context before editing?
 
-3.  **Architectural Integrity**:
-    - Does this change belong in this file, or should I create a new module?
-    - Am I adding a dependency that already exists in a different form?
+### Deep Check
+Use only for architecture-sensitive work:
+1. Which trust boundaries or execution surfaces are involved?
+2. Is there a repo-wide convention or rule that must be reconciled first?
+3. Would editing now be reckless without a broader plan?
 
 ## Protocol
-If any of the above checks fail, you MUST refactor your mental plan BEFORE executing the file operation. No code should be committed to the filesystem that would trigger a warning from the **Scanner Agent**.
+If the Quick Check passes, edit the code.
+If the Standard or Deep Check reveals cross-cutting risk, expand context deliberately, not recursively.
+Do not block a small fix on repo-wide analysis unless the evidence points to repo-wide risk.

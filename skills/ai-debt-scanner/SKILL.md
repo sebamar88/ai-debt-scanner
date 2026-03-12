@@ -1,11 +1,11 @@
 ---
 name: ai-debt-scanner
-description: Advanced framework for detecting "vibe coding" and preventing AI-generated technical debt. Use when user asks to "scan for debt", "audit project", OR when asking to "write code", "implement feature", or "refactor" to act as a real-time architectural guardrail.
+description: Audit repositories for AI-generated technical debt and add lightweight guardrails during high-risk refactors or architecture-sensitive changes. Use when the user asks to scan, audit, review debt, or explicitly wants a guardrail before broad code changes.
 ---
 
 # AI Debt Scanner Framework
 
-This skill transforms the AI agent into a specialized Technical Debt Auditor and Architect. It operates in two modes: **Audit Mode** (detecting existing debt) and **Guardrail Mode** (preventing debt during generation).
+This skill transforms the AI agent into a specialized Technical Debt Auditor. It operates in two modes: **Audit Mode** (detecting existing debt) and **Guardrail Mode** (preventing debt during high-risk changes).
 
 ## Instructions
 
@@ -19,7 +19,16 @@ This skill transforms the AI agent into a specialized Technical Debt Auditor and
    chmod +x .git/hooks/pre-commit
    ```
 
-### Step 2: Research Phase (Preventing Hallucinations)
+### Step 2: Depth Selection
+Choose the lightest workflow that can safely answer the user request:
+
+- **Quick**: Small change, local refactor, or one-file review. Inspect only the affected area plus immediate boundaries.
+- **Standard**: Multi-file feature, unclear ownership, or explicit debt review on a subsystem. Inspect the touched subsystem and adjacent contracts.
+- **Deep**: Full audit, architecture review, polyglot drift check, or repo-wide cleanup. Inspect the whole repository.
+
+Default to **Quick** unless the user explicitly asks for a broader audit or the local evidence shows system-wide risk.
+
+### Step 3: Research Phase (Preventing Hallucinations)
 Before auditing or generating code for a specific stack, eliminate ambiguity:
 1. Identify the stack and its version.
 2. Use the most appropriate tool for grounding:
@@ -27,11 +36,14 @@ Before auditing or generating code for a specific stack, eliminate ambiguity:
    - **Specialized MCPs (e.g., Context7)**: For fast, up-to-date snippets.
    - **Native CLI tools**: To inspect local dependencies (`package.json`, `go.mod`, etc.).
 3. **Dynamic Context Discovery**: Automatically adapt to project-specific laws in `AGENTS.md`, `.gga`, `GEMINI.md`, or `CLAUDE.md`.
-4. **Artifact Fingerprinting is mandatory**: Inspect manifests, lockfiles, source layout, CI files, deployment descriptors, schema files, and tests to classify the repository by its actual execution surfaces and trust boundaries.
-5. **No closed language list**: Treat detected artifacts as evidence, not as membership in a predefined catalog. Any repository must be audited with the same depth regardless of language, framework, VM, or toolchain.
-6. **Run an equivalent audit depth across all code surfaces**: If multiple runtimes coexist, scan each with the same rigor instead of treating any non-dominant stack as "miscellaneous files".
+4. **Artifact Fingerprinting is scoped by depth**:
+   - In **Quick**, inspect only manifests and files relevant to the affected area.
+   - In **Standard**, inspect the touched subsystem and its contracts.
+   - In **Deep**, inspect repo-wide execution surfaces and trust boundaries.
+5. **No closed language list**: Treat detected artifacts as evidence, not as membership in a predefined catalog.
+6. **Escalate breadth only when justified**: Do not scan the entire repository for a narrow change unless local evidence suggests cross-cutting risk.
 
-### Step 2.1: Universal Audit Dimensions
+### Step 3.1: Universal Audit Dimensions
 After fingerprinting the repository, derive audit heuristics from these dimensions rather than from a hardcoded language matrix:
 
 - **Error Semantics**
@@ -51,13 +63,14 @@ After fingerprinting the repository, derive audit heuristics from these dimensio
 - **Documentation and Intent**
   - Detect outdated docs, TODO placeholders, AI artifacts, misleading comments, and divergence between implementation and declared behavior.
 
-### Step 3: Guardrail Mode (Live Prevention)
-**CRITICAL:** When the user asks to implement a feature, write code, or refactor (and NOT just audit):
-1. **Pre-Writing Hook**: Before modifying any file, you MUST follow the protocol in `./references/agents/pre_writing_hook.md` to ensure context alignment.
-2. Apply the detection heuristics from `./references/rules.md` to your own generated code.
-3. Ensure no new architectural violations, security smells, or "vibe coding" are introduced.
+### Step 4: Guardrail Mode (Live Prevention)
+Use Guardrail Mode when the user explicitly asks for safety checks, or when the change is broad, architectural, or likely to create cross-file debt.
+1. **Pre-Writing Hook**: Before modifying files in Standard or Deep mode, follow `./references/agents/pre_writing_hook.md`.
+2. In Quick mode, perform only a compact local check: scope, contracts, errors, and architecture fit.
+3. Apply the detection heuristics from `./references/rules.md` to your own generated code.
+4. Ensure no new architectural violations, security smells, or "vibe coding" are introduced.
 
-### Step 4: Audit Mode (Finding Debt)
+### Step 5: Audit Mode (Finding Debt)
 When asked to explicitly scan or audit, execute the appropriate specialized mode:
 - **Incremental Audit (`--diff`)**: Scans only files changed in the current git branch.
 - **Prioritized Audit (`--top-k <N>`)**: Reports only the top `<N>` most critical offenders.
@@ -68,14 +81,20 @@ Apply detection heuristics (consult `./references/rules.md`):
 2. **Structural Bloat**: Files > 300 lines or functions > 50 lines.
 3. **Lazy Patterns**: SRP violations, DRY violations, cognitive overload.
 
-### Step 5: Workflow Execution
-1. **Scanner Agent**: Use `./references/agents/scanner.md` to identify hotspots, fingerprint repository artifacts, and apply contextual overrides.
-2. **Architect Agent**: Use `./references/agents/architect.md` to map cross-file dependencies and identify layering leaks.
-3. **Cleaner Agent**: Use `./references/agents/cleaner.md` to apply targeted fixes. **CRITICAL:** No refactor is applied without baseline and verification tests (Test-Driven Refactoring).
+### Step 6: Workflow Execution
+1. **Scanner Agent**: Use `./references/agents/scanner.md` to identify hotspots, fingerprint repository artifacts at the chosen depth, and apply contextual overrides.
+2. **Architect Agent**: Use `./references/agents/architect.md` only for Standard or Deep work, or when cross-file boundaries are central to the problem.
+3. **Cleaner Agent**: Use `./references/agents/cleaner.md` only when there is a concrete fix plan. No refactor is applied without baseline and verification tests when behavior is at risk.
 4. **Ruleset Source**: Use `./references/rules.md` as the canonical scoring model, deriving language-specific symptoms from universal audit dimensions rather than from a fixed list of languages.
 
-### Step 6: Output Protocol (TOON)
-When auditing, you MUST output findings in **TOON** (Token-Oriented Object Notation) format for surgical precision:
+### Step 7: Output Protocol
+Use the lightest output format that matches the task:
+
+- **Quick**: Short human summary with the top findings and next action.
+- **Standard**: Short summary plus a structured findings list.
+- **Deep / `--diff` / `--top-k` / formal audit**: Output findings in **TOON** (Token-Oriented Object Notation) for surgical precision.
+
+TOON format:
 ```json
 {
   "summary": {
@@ -109,26 +128,28 @@ Result: Structured JSON report of critical vulnerabilities in modified files.
 ### Example 2: Full Project Audit
 User says: "Check the whole project for vibe coding"
 Actions:
-1. Ground knowledge using latest documentation for the project's stack.
-2. Execute Architect Agent to map dependencies.
-3. Report the top offenders using TOON format.
+1. Select Deep mode because the user requested repo-wide review.
+2. Ground knowledge using latest documentation for the project's stack.
+3. Execute Architect Agent to map dependencies.
+4. Report the top offenders using TOON format.
 Result: High-level architectural review highlighting severe coupling or lazy patterns.
 
 ### Example 2b: Backend / Polyglot Audit
 User says: "Escaneá también el backend, no solo el frontend"
 Actions:
-1. Fingerprint all repository artifacts and execution surfaces before scanning.
-2. Run separate passes for product code, scripts, infrastructure, tests, and generated boundaries.
-3. Apply equivalent heuristics from universal audit dimensions such as failure handling, boundary integrity, contract safety, and structural complexity.
-4. Merge the findings into a single TOON report ranked by severity.
+1. Select Standard or Deep mode depending on repo size and user scope.
+2. Fingerprint relevant repository artifacts and execution surfaces before scanning.
+3. Run separate passes for product code, scripts, infrastructure, tests, and generated boundaries only where the chosen depth requires it.
+4. Apply equivalent heuristics from universal audit dimensions such as failure handling, boundary integrity, contract safety, and structural complexity.
+5. Merge the findings into a single report ranked by severity.
 Result: The report reflects debt across the whole repository without overfitting to any specific language ecosystem.
 
 ### Example 3: Live Guardrail (Code Generation)
 User says: "Implement a new user profile component"
 Actions:
-1. Trigger Guardrail Mode.
-2. Run Pre-Writing Hook (`./references/agents/pre_writing_hook.md`).
-3. Generate code adhering to architectural rules (no lazy patterns, no `any` abuse).
+1. Trigger Quick or Standard Guardrail Mode depending on change breadth.
+2. Run the compact local check or the Pre-Writing Hook (`./references/agents/pre_writing_hook.md`) as needed.
+3. Generate code adhering to architectural rules without expanding into a repo-wide audit unless risk justifies it.
 Result: Clean, tested code without introducing new technical debt.
 
 ## Troubleshooting
