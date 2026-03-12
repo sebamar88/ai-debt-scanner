@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Debt Scanner"
+  short_description: "Scan repositories for AI-generated technical debt"
+  default_prompt: "Use $ai-debt-scanner to audit this repository for technical debt and architectural drift."

@@ -10,7 +10,8 @@ This is a universal reasoning framework designed for AI agents (like Gemini, Cla
 - 🌫️ **Dynamic Context Discovery:** Automatically scans for project laws in `GEMINI.md`, `CLAUDE.md`, or `.ai-debt-rules.md` to adapt its audit to your specific team standards.
 - ⚡ **Incremental Audits:** Supports `--diff` mode to scan only modified files, making it ideal for pre-commit hooks.
 - ⚖️ **Severity-Based Scoring:** Classifies debt as **CRITICAL** (e.g., security risks, AI artifacts), **WARNING** (structural bloat, cognitive overload), or **INFO** (magic numbers, redundant comments).
-- 🧠 **Universal Support:** Handles C++, C#, Haskell, Pascal, PHP, Shell, Java, Python, and more by focusing on semantic and architectural patterns (**KISS, DRY, YAGNI, SOLID**).
+- 🧠 **Universal Support:** Audits any language or runtime by focusing on semantic and architectural patterns (**KISS, DRY, YAGNI, SOLID, failure semantics, boundary integrity, contract safety**) instead of a fixed stack list.
+- 🗺️ **Mandatory Artifact Fingerprinting:** Detects execution surfaces and trust boundaries first so audits do not overfit to any ecosystem, regardless of language, framework, VM, or toolchain.
 
 ## How it Works
 
@@ -73,8 +74,16 @@ You can invoke the scanner by asking the agent to:
 - "Run an incremental audit (`--diff`) to check my recent changes."
 - "Show me the top 5 most critical offenders (`--top-k 5`)."
 - "Audit my code for vibe-coding patterns in [Pascal/C++/Java/Haskell/etc.]."
+- "Audit all code surfaces with the same depth."
 
 The agent will generate a standardized **TOON (Token-Oriented Object Notation)** JSON report.
+
+### Universal Audit Examples
+
+- **Failure handling**: swallowed errors, ignored status channels, blanket exception handling, unsafe revert paths.
+- **Boundary integrity**: transport/domain/persistence/infra mixed in one unit or hidden dependency leaks.
+- **Contract safety**: unchecked inputs, type escapes, schema drift, generated clients diverging from source contracts.
+- **Operational risk**: unsafe deployment scripts, brittle automation, missing rollback/failure strategy.
 
 ### Installation
 
