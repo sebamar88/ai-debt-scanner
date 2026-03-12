@@ -5,20 +5,26 @@ This is a universal reasoning framework designed for AI agents (like Gemini, Cla
 ## Key Advancements
 
 - 🌍 **OS & Runtime Agnostic:** Works natively on Windows, macOS, and Linux without requiring Python, Node.js, or any external binaries.
-- 🛡️ **Enterprise Guardrails:** Proactively detects **Security Smells**, **Documentation Gaps**, and **Dependency Overkill**.
+- 🛡️ **Lightweight Guardrails:** Applies a compact quality check during code changes and escalates only when the change is broad, architectural, or explicitly audit-driven.
 - 🧪 **Context-Aware Scanning:** Automatically reduces noise in test files (ignores Magic Numbers in `**/tests/**` or `*.spec.*`) and relaxes rules for configuration and orchestration files.
 - 🌫️ **Dynamic Context Discovery:** Automatically scans for project laws in `GEMINI.md`, `CLAUDE.md`, or `.ai-debt-rules.md` to adapt its audit to your specific team standards.
 - ⚡ **Incremental Audits:** Supports `--diff` mode to scan only modified files, making it ideal for pre-commit hooks.
 - ⚖️ **Severity-Based Scoring:** Classifies debt as **CRITICAL** (e.g., security risks, AI artifacts), **WARNING** (structural bloat, cognitive overload), or **INFO** (magic numbers, redundant comments).
 - 🧠 **Universal Support:** Audits any language or runtime by focusing on semantic and architectural patterns (**KISS, DRY, YAGNI, SOLID, failure semantics, boundary integrity, contract safety**) instead of a fixed stack list.
-- 🗺️ **Mandatory Artifact Fingerprinting:** Detects execution surfaces and trust boundaries first so audits do not overfit to any ecosystem, regardless of language, framework, VM, or toolchain.
+- 🗺️ **Scoped Artifact Fingerprinting:** Detects execution surfaces and trust boundaries at the right depth, from a local change to a repo-wide audit, without over-scanning by default.
+- 🎚️ **Depth-Based Workflow:** Uses `Quick`, `Standard`, and `Deep` modes so small edits stay fast while larger audits still get full architectural scrutiny.
 
 ## How it Works
 
-The framework implements a **Multi-Agent Reasoning Protocol**:
-1.  **Scanner Agent**: The auditor identifies hotspots using platform-independent tools (`grep_search`, `glob`) and calculates a "Project Debt Temperature".
-2.  **Architect Agent**: Analyzes vulnerabilities and creates a surgical refactoring plan for high-scoring hotspots.
-3.  **Cleaner Agent**: Executes targeted fixes using **Test-Driven Refactoring**, ensuring no regressions through mandatory baseline and verification tests.
+The framework implements a **depth-aware reasoning protocol**:
+1.  **Quick**: Review the affected area and immediate boundaries only.
+2.  **Standard**: Expand to adjacent contracts, modules, and subsystem edges.
+3.  **Deep**: Run a full architectural audit across the repository.
+
+Supporting agents are used selectively:
+1.  **Scanner Agent**: Identifies hotspots using platform-independent tools (`grep_search`, `glob`) and calculates a debt profile for the chosen scope.
+2.  **Architect Agent**: Used when cross-file boundaries or architecture are central to the problem.
+3.  **Cleaner Agent**: Used when there is a concrete fix plan and behavior can be validated safely.
 
 ## 🤖 Multi-Agent Awareness
 
@@ -73,10 +79,13 @@ You can invoke the scanner by asking the agent to:
 - "Scan this project for AI debt."
 - "Run an incremental audit (`--diff`) to check my recent changes."
 - "Show me the top 5 most critical offenders (`--top-k 5`)."
-- "Audit my code for vibe-coding patterns in [Pascal/C++/Java/Haskell/etc.]."
-- "Audit all code surfaces with the same depth."
+- "Review this refactor for technical debt before we merge it."
+- "Use guardrails on this architectural change."
 
-The agent will generate a standardized **TOON (Token-Oriented Object Notation)** JSON report.
+Output is depth-aware:
+- **Quick**: short human summary
+- **Standard**: structured findings summary
+- **Deep / `--diff` / `--top-k`**: **TOON (Token-Oriented Object Notation)** JSON report
 
 ### Universal Audit Examples
 
@@ -84,6 +93,12 @@ The agent will generate a standardized **TOON (Token-Oriented Object Notation)**
 - **Boundary integrity**: transport/domain/persistence/infra mixed in one unit or hidden dependency leaks.
 - **Contract safety**: unchecked inputs, type escapes, schema drift, generated clients diverging from source contracts.
 - **Operational risk**: unsafe deployment scripts, brittle automation, missing rollback/failure strategy.
+
+### Depth Selection
+
+- **Quick**: one-file review, narrow fix, local refactor
+- **Standard**: multi-file feature, subsystem review, unclear ownership
+- **Deep**: full audit, architecture review, repo-wide drift analysis
 
 ### Installation
 
