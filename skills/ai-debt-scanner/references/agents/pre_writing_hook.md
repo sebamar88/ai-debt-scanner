@@ -25,7 +25,15 @@ Use only for architecture-sensitive work:
 2. Is there a repo-wide convention or rule that must be reconciled first?
 3. Would editing now be reckless without a broader plan?
 
+### Validation Check
+Run this before acting on any non-trivial debt hypothesis:
+1. What concrete evidence makes this a real problem instead of a vague smell?
+2. What assumption am I still making?
+3. Is this best treated as `PATCH`, `REPLAN`, `ESCALATE`, or `BLOCKED`?
+4. Does this conclusion conflict with any other finding or recommendation already made?
+
 ## Protocol
 If the Quick Check passes, edit the code.
 If the Standard or Deep Check reveals cross-cutting risk, expand context deliberately, not recursively.
 Do not block a small fix on repo-wide analysis unless the evidence points to repo-wide risk.
+If the Validation Check still depends on unresolved assumptions, say so explicitly before editing or reporting the issue as settled.

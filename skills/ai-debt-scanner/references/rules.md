@@ -35,6 +35,41 @@ Each file starts with a score of **0**. Weighted points are added for each detec
 
 ---
 
+## 1.1 Evidence Standard
+The scanner must prefer concrete, local proof over pattern matching alone.
+
+- A rule is **demonstrated** when the code, contract, configuration, or project artifact directly shows the problem.
+- A rule is **indicated** when the evidence is strong but still depends on a small explicit assumption.
+- A rule is **suspected** when the signal is weak, indirect, or easily explained by benign context.
+
+Reporting policy:
+- **Demonstrated** findings may ship with `confidence=high`.
+- **Indicated** findings usually ship with `confidence=medium` and at least one explicit assumption if proof is incomplete.
+- **Suspected** findings should normally be downgraded, escalated for context, or omitted instead of being reported as settled debt.
+
+## 1.2 Confidence Calibration
+Calibrate confidence from evidence quality, not from rhetorical certainty.
+
+| Confidence | When to Use |
+| :--- | :--- |
+| `high` | Direct code-level proof, repeatable evidence, or multiple independent signals that converge without contradiction. |
+| `medium` | Strong indication with limited missing context or one explicit assumption. |
+| `low` | Weak pattern match, inferred architecture, or incomplete artifact set. Prefer `ESCALATE` or omission. |
+
+## 1.3 Revision Mode Mapping
+Every meaningful finding should map to an operational response:
+
+| Revision Mode | Meaning | Typical Trigger |
+| :--- | :--- | :--- |
+| `PATCH` | Localized fix is reasonable and low-risk. | Narrow bug, isolated smell, bounded refactor. |
+| `REPLAN` | Symptom reflects a structural or workflow flaw. | Repeated boundary leak, design drift, misplaced abstraction. |
+| `ESCALATE` | Critical context is missing but obtainable. | Missing schema, hidden runtime contract, unclear ownership. |
+| `BLOCKED` | Responsible conclusion is not possible. | Missing repository slice, generated-only evidence, contradictory artifacts. |
+
+Use `REPLAN` instead of `PATCH` when the evidence shows that a local fix would preserve the root problem.
+
+---
+
 ## 2. Contextual Overrides (Reducing Noise)
 To avoid false positives, the scanner MUST apply these overrides based on the file path or purpose:
 
@@ -69,6 +104,19 @@ The rules above are universal. The scanner MUST reinterpret them according to th
 
 ### F. Polyglot Repositories
 *   **DOC_GAP / DRY_VIOLATION / SRP_VIOLATION**: Flag drift between services, contracts, schemas, generated clients, infrastructure descriptors, and documentation across repository boundaries.
+
+---
+
+## 2.2 Validation and Coherence Rules
+Before finalizing findings:
+
+1. **Try to falsify the candidate** using contextual overrides, adjacent code, and the possibility of a benign explanation.
+2. **Record assumptions explicitly** if the finding still depends on missing context after validation.
+3. **Check for contradictions** across the findings set.
+   - Avoid pairing "needs abstraction" with "over-engineered" on the same path unless the evidence distinguishes the scopes.
+   - Avoid assigning `PATCH` to a symptom that is also explained by an unresolved architectural flaw.
+4. **Merge related findings** when they describe the same underlying debt from different rule angles.
+5. **Downgrade confidence** when severity is high but proof is thin.
 
 ---
 
